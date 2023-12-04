@@ -1,5 +1,5 @@
 
 (executables
-  (names        dscan)
+  (names        reduction)
   (public_names hts_shrink_dbbad)
   (libraries batteries dolog minicli bst parany molenc cpm))
