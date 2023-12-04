@@ -38,7 +38,7 @@
           if maybe_ok then begin
             write_new_dataset mol
             mol :: acc 
-          end else acc
+          end
         ) [] maybe_ok_test_mols in
     let ok_card = L.length ok_test_mols in
     let test_card = L.length dataset in
