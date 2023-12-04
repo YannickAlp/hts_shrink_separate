@@ -18,6 +18,11 @@
   module L = MyList
   module Log = Dolog.Log
   module Mol = Molecules
+
+  let write_new_dataset mol =
+    let output = open_out_gen [Open_wronly; Open_append; Open_creat] 0o666 "new_dataset.AP" in
+    output_string output mol ^ "\n";
+    close_out output
   
   let apply_DBBAD ncores best_d chunk active =
     let actives = L.filter FpMol.is_active active in
@@ -29,7 +34,10 @@
         ) chunk in
     let ok_chunk_mols =
       L.fold (fun acc (maybe_ok, mol) ->
-          if maybe_ok then mol :: acc else acc
+          if maybe_ok then begin
+            mol :: acc;
+            write_new_dataset mol 
+          end else acc
         ) [] maybe_ok_chunk_mols in
     let ok_card = L.length ok_chunk_mols in
     let chunk_card = L.length chunk in
