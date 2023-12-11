@@ -21,7 +21,7 @@
 
   let write_new_dataset mol =
     let output = open_out_gen [Open_wronly; Open_append; Open_creat] 0o666 "new_dataset.AP" in
-    output_string output mol ^ "\n";
+    output_string output (FpMol.to_string mol ^ "\n");
     close_out output
   
   let apply_DBBAD ncores best_d chunk active =
@@ -35,8 +35,9 @@
     let ok_chunk_mols =
       L.fold (fun acc (maybe_ok, mol) ->
           if maybe_ok then begin
-            mol :: acc;
-            write_new_dataset mol 
+            let new_acc = mol :: acc in
+            write_new_dataset mol;
+            new_acc
           end else acc
         ) [] maybe_ok_chunk_mols in
     let ok_card = L.length ok_chunk_mols in
@@ -71,7 +72,7 @@
     (*let dscan_fn = CLI.get_string_def ["--dscan"] args "/dev/null" in*)
     CLI.finalize();
     (* train the DBBAD on the training set *)
-     
+    Log.info "file: %s" chunk_fn;
     let chunk = Molecules.from_file chunk_fn in
     let active = Molecules.from_file active_fn in
     let chunk_DBBAD = apply_DBBAD ncores best_d chunk active in
